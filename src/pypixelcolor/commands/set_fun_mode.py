@@ -3,18 +3,38 @@ from ..lib.device_info import DeviceInfo
 from typing import Optional
 
 
-def set_fun_mode(enable : bool = False):
+def set_fun_mode(enable: bool = False):
     """
-    Enable or disable fun mode.
+    Enable or disable the DIY (fun) display mode.
+
+    The panel's DIY canvas is a live layer: painted pixels (protocol type 5)
+    are only visible while the panel is in DIY mode. Entering DIY mode shows
+    the canvas and, on exit, the panel restores whatever was displayed before
+    entry. This command switches between the two states.
+
+    The full mode byte (``[len,5,0,4,1,<mode>]``) has four values; this
+    command exposes the two the panel actually needs:
+
+    * ``enable=True``  -> mode ``1`` (ENTER_CLEAR_CUR_SHOW): enter DIY mode
+      and clear the canvas.
+    * ``enable=False`` -> mode ``0`` (QUIT_NOSAVE_KEEP_PREV): exit DIY mode,
+      discard the canvas, and restore the previous show.
+
+    (Mode ``3`` ENTER_NO_CLEAR_CUR_SHOW also enters without clearing; mode
+    ``2`` QUIT_STILL_CUR_SHOW is unused by the vendor app.)
+
+    This write is fire-and-forget: the panel does not ACK it (like type-5
+    paint frames), so no ACK is awaited.
 
     Args:
-        enable: Boolean or equivalent, enables (True) or disables (False) fun mode.
+        enable: Boolean or equivalent, enables (True) or disables (False)
+            fun mode.
     """
-    
+
     # Convert bool
     if isinstance(enable, str):
         enable = enable.lower() in ("true", "1", "yes", "on")
-    
+
     # Build payload using bytes
     payload = bytes([
         5,                        # Command length
@@ -23,8 +43,10 @@ def set_fun_mode(enable : bool = False):
         1,                        # Command type ID
         1 if bool(enable) else 0  # Fun mode value
     ])
-    
-    return single_window_plan("set_fun_mode", payload)
+
+    # Fire-and-forget: the panel never ACKs this write (APK sends it as a
+    # plain callback; waiting 8s for an ACK would always time out).
+    return single_window_plan("set_fun_mode", payload, requires_ack=False)
 
 
 def set_pixel(x: int, y: int, color: str, device_info: Optional[DeviceInfo] = None):
