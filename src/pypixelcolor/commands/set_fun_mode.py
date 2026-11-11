@@ -21,7 +21,7 @@ def set_fun_mode(enable: bool = False):
       discard the canvas, and restore the previous show.
 
     (Mode ``3`` ENTER_NO_CLEAR_CUR_SHOW also enters without clearing; mode
-    ``2`` QUIT_STILL_CUR_SHOW is unused by the vendor app.)
+    ``2`` QUIT_STILL_CUR_SHOW is unused.)
 
     This write is fire-and-forget: the panel does not ACK it (like type-5
     paint frames), so no ACK is awaited.
@@ -44,8 +44,8 @@ def set_fun_mode(enable: bool = False):
         1 if bool(enable) else 0  # Fun mode value
     ])
 
-    # Fire-and-forget: the panel never ACKs this write (APK sends it as a
-    # plain callback; waiting 8s for an ACK would always time out).
+    # Fire-and-forget: verified on hardware that the panel never ACKs this
+    # write; waiting 8 s for an ACK would always time out.
     return single_window_plan("set_fun_mode", payload, requires_ack=False)
 
 
