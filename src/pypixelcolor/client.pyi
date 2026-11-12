@@ -55,7 +55,7 @@ class AsyncClient:
         """Set the clock mode of the device."""
         ...
     async def set_fun_mode(self, enable: bool = False) -> None:
-        """Enable or disable fun mode."""
+        """Enable or disable the DIY (fun) display mode."""
         ...
     async def set_orientation(self, orientation: int = 0) -> None:
         """Set the orientation of the device."""
@@ -141,7 +141,7 @@ class Client:
         """Set the clock mode of the device."""
         ...
     def set_fun_mode(self, enable: bool = False) -> None:
-        """Enable or disable fun mode."""
+        """Enable or disable the DIY (fun) display mode."""
         ...
     def set_orientation(self, orientation: int = 0) -> None:
         """Set the orientation of the device."""
